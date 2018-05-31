@@ -12,7 +12,7 @@ def replaceMentionsWithNames(text): # Replaces the @names with *Name* and return
 	matches = re.finditer(namePattern,text)
 	end=0
 	for match in matches:
-		names.add(match.group()[1:])
+		names.add(match.group()[1:].lower())
 		modString=modString+text[end:match.start()]+"*NAME*"
 		end=match.end()
 	modString=modString+text[end:]
@@ -25,18 +25,22 @@ def deleteEmotes(str):  # Needs improvement
 	return str
 
 def breakDownHashtags(text):
+	
 	def splitWordAndAddSpaces(word): # add space in front as well as end    ##DEPENDENCY to remove##
-			wordlist = wordninja.split(word)
-			string = ' '.join(eachword for eachword in wordlist )
-		return " "+string+" "
-	tagPattern= re.compile(r"#[a-zA-Z0-9_]")
+		wordlist = wordninja.split(word.lower())
+		string = ' '.join(eachword for eachword in wordlist )
+		return (" "+string+" ")
+	
+	tagPattern= re.compile(r"#[a-zA-Z0-9_]+")
 	tags=re.finditer(tagPattern,text)
 	end=0
-	brokenString=""
+	modString=""
 	for tag in tags:
-		formattedword=splitWordAndAddSpaces(word)
+		word=tag.group()[1:]
+		changedword=splitWordAndAddSpaces(word)
 		modString=modString+text[end:tag.start()]+changedword
 		end=tag.end()
+		print(word,changedword)
 	modString=modString+text[end:]
 	return modString
 
@@ -62,7 +66,8 @@ def doSpellCorrection(text):
 
 def substituteNames(text , names):
 	for eachname in names:
-		text=text.replace(eachname,"*NAME*")
+		pattern=re.compile(re.escape(eachname), re.IGNORECASE)
+		text=pattern.sub('*NAME*',text)
 	return text
 
 inputText=input()
@@ -70,6 +75,8 @@ modString,names=replaceMentionsWithNames(inputText) # modStirng stores the modif
 modString=deleteEmotes(modString)
 modString=breakDownHashtags(modString)
 modString=doSpellCorrection(" "+modString)[1:]
-modString=substituteNames(modString)
+modString=substituteNames(modString, names)
 
+multiple_space_pattern=re.compile(r"\s+")
+modString=multiple_space_pattern.sub(r" ",modString) #Removes multiple spaces
 print(modString)
