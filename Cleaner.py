@@ -4,6 +4,7 @@ import wordninja
 
 # Currently supports only English
 # Need to add a way to replace backslash characters
+
 def replaceMentionsWithNames(text): # Replaces the @names with *Name* and returns the names used
 	namePattern = re.compile(r"@[a-zA-Z0-9_]{1,15}")
 	names=set()
